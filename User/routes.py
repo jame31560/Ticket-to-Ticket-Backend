@@ -1,6 +1,8 @@
 from flask import jsonify, Blueprint, request
 from User.models import User
+from flask_jwt_extended import jwt_required,get_jwt_identity
 from app import app
+import traceback
 
 user_bp = Blueprint("user", __name__)
 
@@ -49,3 +51,35 @@ def user_signup():
             email=new_user.email), 200
     except:
         return jsonify(msg="Server Error"), 500
+
+@user_bp.route("/changepassword", methods=["PUT"])
+@app.validate('user', 'changePassword')
+@jwt_required
+def user_changepassword():
+    """
+    User Change Password
+    ---
+    tags:
+      - User
+    produces: application/json
+    """
+    try:
+        current_user = get_jwt_identity()
+        print(current_user)
+        inp = request.json
+        print(inp)
+        user = User.query.filter({"username": current_user["username"]}).first()
+        if not user:
+            return jsonify(msg="ACCOUNT_NOT_FOUND"), 403
+        if inp["new_password"] != inp["check_password"]:
+            return jsonify(msg="PASSWORD_NOT_EQUAL"), 400
+        if not user.checkPassword(inp["old_password"]):
+            return jsonify(msg="AUTH_FAIL"), 403
+        if user.changePassword(inp["new_password"]):
+            return jsonify(msg="SUCCESS"), 200
+        else:
+            return jsonify(msg="Server Error"), 500
+    except:
+        traceback.print_exc()
+        return jsonify(msg="Server Error"), 500
+

@@ -25,6 +25,14 @@ class User(db.Document):
         return True if pbkdf2_sha256.verify(
             password, self.password) else False
 
+    def changePassword(self,newPassword):
+        try:
+            self.password = pbkdf2_sha256.encrypt(newPassword)
+            self.save()
+            return True
+        except:
+            return False
+
     def get_info(self):
         return {
             "id": str(self.mongo_id),
