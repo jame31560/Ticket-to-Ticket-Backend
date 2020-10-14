@@ -27,6 +27,11 @@ class Configdb(Config):
 class ConfigJWT(Config):
     JWT_SECRET_KEY = "[your_JWT_KEY]"
 
+
+class ConfigSwagger(Config):
+    SWAGGER = {
+        "url_prefix": "/[swagger_base_url]"
+    }
 ```
 
 ## Run app (Test)
