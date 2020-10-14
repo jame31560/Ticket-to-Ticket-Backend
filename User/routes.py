@@ -35,6 +35,10 @@ def user_signup():
         user = request.json
         if user["password"] != user["check_password"]:
             return jsonify(msg="password not equal"), 400
+        if User.query.filter(User.email == user["email"]).count() > 0:
+            return jsonify(msg="EMAIL_USED"), 400
+        if User.query.filter(User.username == user["username"]).count() > 0:
+            return jsonify(msg="USERNAME_USED"), 400
         new_user = User()
         new_user.signup(user["name"], user["username"],
                         user["password"], user["email"])
