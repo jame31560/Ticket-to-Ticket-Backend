@@ -17,6 +17,9 @@ Add `config.py` and put the following content.
 class Config(object):
     DEBUG = True
     CSRF_ENABLED = True
+    BASE_URL = ""
+    MAIL_PASSWORD = ""
+    MAIL_USERNAME = ""
 
 
 class Configdb(Config):

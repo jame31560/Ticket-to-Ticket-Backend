@@ -8,11 +8,33 @@ import traceback
 auth_bp = Blueprint("auth", __name__)
 
 
+@auth_bp.route("/verify", methods=["GET"])
+@app.validate('auth', 'verify')
+def auth_verify():
+    """
+    User Verify Email
+    ---
+    tags:
+      - Auth
+    produces: application/json
+    """
+    try:
+        input_json = request.json
+        user = User.query.filter({"token": input_json["token"]}).first()
+        if not user:
+            return jsonify(msg="ERROR_TOKEN"), 400
+        user.verify_email()
+        return jsonify(msg="SUCCESS"), 200
+    except:
+        traceback.print_exc()
+        return jsonify(msg="Server Error"), 500
+
+
 @auth_bp.route("/login", methods=["POST"])
 @app.validate('auth', 'login')
 def auth_login():
     """
-    User Sign Up
+    User Login
     ---
     tags:
       - Auth

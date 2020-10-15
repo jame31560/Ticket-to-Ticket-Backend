@@ -1,5 +1,7 @@
 from app import db
+from Models.Mail import Mail
 from passlib.hash import pbkdf2_sha256
+from datetime import datetime
 
 
 class User(db.Document):
@@ -10,8 +12,10 @@ class User(db.Document):
     verify = db.BoolField()
     point = db.IntField()
     role = db.IntField()
+    token = db.StringField()
 
-    def signup(self, name, username, password, email):
+    def signup(self, name: str,
+               username: str, password: str, email: str) -> None:
         self.name = name
         self.username = username
         self.password = pbkdf2_sha256.encrypt(password)
@@ -19,13 +23,17 @@ class User(db.Document):
         self.verify = False
         self.point = 0
         self.role = 0
+        self.token = pbkdf2_sha256.encrypt(str(datetime.now()))[
+            21:].replace("$", "").replace("/", "")
         self.save()
+        mail = Mail()
+        mail.send_signup_verify(self.email, self.token, self.name)
 
-    def checkPassword(self, password):
+    def checkPassword(self, password: str) -> bool:
         return True if pbkdf2_sha256.verify(
             password, self.password) else False
 
-    def changePassword(self,newPassword):
+    def changePassword(self, newPassword: str) -> bool:
         try:
             self.password = pbkdf2_sha256.encrypt(newPassword)
             self.save()
@@ -33,7 +41,7 @@ class User(db.Document):
         except:
             return False
 
-    def get_info(self):
+    def get_info(self) -> dict:
         return {
             "id": str(self.mongo_id),
             "name": self.name,
@@ -42,3 +50,8 @@ class User(db.Document):
             "point": self.point,
             "role": self.role
         }
+
+    def verify_email(self) -> None:
+        self.token = ""
+        self.verify = True
+        self.save()
