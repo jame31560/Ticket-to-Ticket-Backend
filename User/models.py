@@ -2,6 +2,7 @@ from app import db
 from Models.Mail import Mail
 from passlib.hash import pbkdf2_sha256
 from datetime import datetime
+import traceback
 
 
 class User(db.Document):
@@ -39,6 +40,16 @@ class User(db.Document):
             self.save()
             return True
         except:
+            traceback.print_exc()
+            return False
+
+    def changeName(self, name: str) -> bool:
+        try:
+            self.name = name
+            self.save()
+            return True
+        except:
+            traceback.print_exc()
             return False
 
     def get_info(self) -> dict:

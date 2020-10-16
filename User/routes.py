@@ -62,12 +62,23 @@ def user_changepassword():
     tags:
       - User
     produces: application/json
+    parameters:
+    - name: old_password
+      in: path
+      type: string
+      required: true
+    - name: new_password
+      in: path
+      type: string
+      required: true
+    - name: check_password
+      in: path
+      type: string
+      required: true
     """
     try:
         current_user = get_jwt_identity()
-        print(current_user)
         inp = request.json
-        print(inp)
         user = User.query.filter({"username": current_user["username"]}).first()
         if not user:
             return jsonify(msg="ACCOUNT_NOT_FOUND"), 403
@@ -78,8 +89,36 @@ def user_changepassword():
         if user.changePassword(inp["new_password"]):
             return jsonify(msg="SUCCESS"), 200
         else:
-            return jsonify(msg="Server Error"), 500
+            return jsonify(msg="Error"), 500
     except:
         traceback.print_exc()
         return jsonify(msg="Server Error"), 500
 
+@user_bp.route("/changename", methods=["PUT"])
+@app.validate('user', 'changeName')
+@jwt_required
+def user_changename():
+    """
+    User Change Name
+    ---
+    tags:
+      - User
+    produces: application/json
+    parameters:
+    - name: new_name
+      in: path
+      type: string
+      required: true
+    """
+    try:
+        current_user = get_jwt_identity()
+        inp = request.json
+        user = User.query.filter({"username": current_user["username"]}).first()
+        if user.changeName(inp["new_name"]):
+            return jsonify(msg="SUCCESS"), 200
+        else:
+            return jsonify(msg="Server Error"), 500
+    except:
+        traceback.print_exc()
+        return jsonify(msg="Server Error"), 500
+    

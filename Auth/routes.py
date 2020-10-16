@@ -44,7 +44,7 @@ def auth_login():
       in: path
       type: string
       required: true
-    - name: node_id
+    - name: password
       in: path
       type: string
       required: true

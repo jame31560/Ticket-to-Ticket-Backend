@@ -52,5 +52,16 @@
             "new_password",
             "check_password"
         ]
+    },
+    "changeName":{
+        "type":"object",
+        "proerties":{
+            "new_name":{
+                "type":"string"
+            }
+        },
+        "required": [
+            "new_name"
+        ]
     }
 }
