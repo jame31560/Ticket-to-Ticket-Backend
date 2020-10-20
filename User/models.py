@@ -66,3 +66,13 @@ class User(db.Document):
         self.token = ""
         self.verify = True
         self.save()
+
+class Activity(db.Document):
+    name = db.StringField()
+    date = db.StringField()
+    location = db.StringField()
+    def creatActivity(self,name: str,date: str,location: str):
+        self.name = name
+        self.date = date
+        self.location = location
+        self.save()
