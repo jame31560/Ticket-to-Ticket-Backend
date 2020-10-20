@@ -139,6 +139,9 @@ def creatActivity():
     """
 	try:
 		inp = request.json
+		if Activity.query.filter(Activity.name == inp["name"]).count() > 0 and \
+			Activity.query.filter(Activity.date == inp["date"]).count() > 0:
+			return jsonify(msg=" Activity session exists"),400
 		new_activity = Activity()
 		new_activity.creatActivity(inp["name"],inp["date"],inp["location"])
 		return jsonify(msg="SUCCESS"), 200
