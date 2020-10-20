@@ -76,3 +76,19 @@ class Activity(db.Document):
         self.date = date
         self.location = location
         self.save()
+
+class Ticket(db.Document):
+    name = db.StringField()
+    date = db.StringField()
+    location = db.StringField()
+    type = db.IntField() #purchase 1, sell 2, exchange 3
+    owner = db.StringField()
+    price = db.IntField()
+    def creatTicket(self,act: Activity, type: int, owner: str, price: int):
+        self.name = act.name
+        self.date = act.date
+        self.location = act.location
+        self.type = type
+        self.owner = owner
+        self.price = price
+        self.save()
