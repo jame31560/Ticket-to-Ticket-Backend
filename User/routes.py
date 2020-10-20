@@ -1,5 +1,5 @@
 from flask import jsonify, Blueprint, request
-from User.models import User
+from User.models import User,Activity
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from app import app
 import traceback
@@ -121,4 +121,30 @@ def user_changename():
     except:
         traceback.print_exc()
         return jsonify(msg="Server Error"), 500
-    
+
+@user_bp.route("/creatactivity", methods=["POST"])
+@app.validate('user', 'creatactivity')
+def creatActivity():
+	"""
+    Creat Activity
+    ---
+    tags:
+      - User
+    produces: application/json
+    parameters:
+    - name: new_name
+      in: path
+      type: string
+      required: true
+    """
+	try:
+		inp = request.json
+		new_activity = Activity()
+		new_activity.creatActivity(inp["name"],inp["date"],inp["location"])
+		return jsonify(msg="SUCCESS"), 200
+	except:
+		traceback.print_exc()
+		return jsonify(msg="Server Error"), 500
+
+
+		

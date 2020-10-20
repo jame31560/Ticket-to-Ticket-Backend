@@ -63,5 +63,24 @@
         "required": [
             "new_name"
         ]
+    },
+    "creatactivity":{
+        "type":"object",
+        "proerties":{
+            "name": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+            },
+            "location": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "name",
+            "date",
+            "location"
+        ]
     }
 }
