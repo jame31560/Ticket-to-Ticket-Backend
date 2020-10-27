@@ -1,5 +1,5 @@
 from flask import jsonify, Blueprint, request
-from User.models import User,Activity
+from User.models import User,Activity,Event
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from app import app
 import traceback
@@ -139,15 +139,27 @@ def creatActivity():
     """
 	try:
 		inp = request.json
-		if Activity.query.filter(Activity.name == inp["name"]).count() > 0 and \
-			Activity.query.filter(Activity.date == inp["date"]).count() > 0:
-			return jsonify(msg=" Activity session exists"),400
+		if Activity.query.filter(Activity.name == inp["name"]).count() > 0:
+			return jsonify(msg="Activity Exists"),400
 		new_activity = Activity()
-		new_activity.creatActivity(inp["name"],inp["date"],inp["location"])
+		new_activity.creatActivity(inp["name"])
 		return jsonify(msg="SUCCESS"), 200
 	except:
 		traceback.print_exc()
 		return jsonify(msg="Server Error"), 500
 
-
-		
+@user_bp.route("/createvent", methods=["POST"])
+@app.validate('user', 'createvent')
+def creatEvent():
+	try:
+		inp = request.json
+		activity = Activity.query.filter({"name": inp["activity_name"]}).first()
+		# if Event.query.filter(Event.subname == inp["subname"]).count() > 0:
+		# 	return jsonify(msg="Event Exists"),400
+		new_Event = Event()
+		new_Event.creatEvent(inp["subname"],inp["date"],inp["location"])
+		activity.addEvent(new_Event)
+		return jsonify(msg="SUCCESS"), 200
+	except:
+		traceback.print_exc()
+		return jsonify(msg="Server Error"), 500

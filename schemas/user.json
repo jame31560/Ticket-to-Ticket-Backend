@@ -69,16 +69,30 @@
         "proerties":{
             "name": {
                 "type": "string"
-            },
-            "date": {
-                "type": "string"
-            },
-            "location": {
-                "type": "string"
             }
         },
         "required": [
-            "name",
+            "name"
+        ]
+    }, "createvent":{
+        "type":"object",
+        "proerties":{
+            "activity_name": {
+                "type": "string"
+            },
+            "subname":{
+                "type":"string"
+            },
+            "date":{
+                "type":"string"
+            },
+            "location":{
+                "type":"string"
+            }
+        },
+        "required": [
+            "activity_name",
+            "subname",
             "date",
             "location"
         ]

@@ -67,28 +67,42 @@ class User(db.Document):
         self.verify = True
         self.save()
 
-class Activity(db.Document):
-    name = db.StringField()
-    date = db.StringField()
-    location = db.StringField()
-    def creatActivity(self,name: str,date: str,location: str):
-        self.name = name
-        self.date = date
-        self.location = location
+class Ticket(db.Document):
+    area = db.StringField()
+    price = db.IntField()
+    owner = db.StringField()
+    type = db.StringField()
+    def creatTicket(self,area:str,price:int,type:str):
+        self.area = area
+        self.price = price
+        self.type = type
         self.save()
 
-class Ticket(db.Document):
-    name = db.StringField()
+class Event(db.Document):
     date = db.StringField()
+    subname = db.StringField()
     location = db.StringField()
-    type = db.IntField() #purchase 1, sell 2, exchange 3
-    owner = db.StringField()
-    price = db.IntField()
-    def creatTicket(self,act: Activity, type: int, owner: str, price: int):
-        self.name = act.name
-        self.date = act.date
-        self.location = act.location
-        self.type = type
-        self.owner = owner
-        self.price = price
+    tick = db.ListField(db.DocumentField(Ticket))
+    def creatEvent(self,subname:str,date:str,location:str):
+        self.subname = subname
+        self.date = date
+        self.location = location
+        self.tick = []
         self.save()
+    
+class Activity(db.Document):
+    name = db.StringField()
+    event = db.ListField(db.DocumentField(Event))
+  
+    def creatActivity(self,name: str):
+        self.name = name
+        self.event = []
+        self.save()
+    
+    def addEvent(self,event:Event):
+        self.event.append(event)
+        self.save()
+    
+
+
+
