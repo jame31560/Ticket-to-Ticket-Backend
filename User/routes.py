@@ -1,5 +1,5 @@
 from flask import jsonify, Blueprint, request
-from User.models import User,Activity,Event
+from User.models import User,Activity,Event,Ticket
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from app import app
 import traceback
@@ -159,6 +159,26 @@ def creatEvent():
 		new_Event = Event()
 		new_Event.creatEvent(inp["subname"],inp["date"],inp["location"])
 		activity.addEvent(new_Event)
+		return jsonify(msg="SUCCESS"), 200
+	except:
+		traceback.print_exc()
+		return jsonify(msg="Server Error"), 500
+
+@user_bp.route("/creatticket", methods=["POST"])
+@app.validate('user', 'creatticket')
+@jwt_required
+def creatTicket():
+	try:
+		current_user = get_jwt_identity()
+		inp = request.json
+		user = User.query.filter({"username": current_user["username"]}).first()
+		activity = Activity.query.filter({"name": inp["activity_name"]}).first()
+		for eventlist in activity.event:
+			if eventlist.subname == inp["subname"]:
+				event = eventlist
+		new_ticket = Ticket()
+		new_ticket.creatTicket(user.name,inp["area"],inp["price"],inp["type"],inp["stuts"])
+		event.addTicket(new_ticket)
 		return jsonify(msg="SUCCESS"), 200
 	except:
 		traceback.print_exc()

@@ -96,5 +96,35 @@
             "date",
             "location"
         ]
+    },"creatticket":{
+        "type":"object",
+        "proerties":{
+            "activity_name": {
+                "type": "string"
+            },
+            "subname":{
+                "type":"string"
+            },
+            "area":{
+                "type":"string"
+            },
+            "price":{
+                "type":"int"
+            },
+            "type":{
+                "type":"string"
+            },
+            "stuts":{
+                "type":"string"
+            }
+        },
+        "required": [
+            "activity_name",
+            "subname",
+            "area",
+            "price",
+            "type",
+            "stuts"
+        ]
     }
 }

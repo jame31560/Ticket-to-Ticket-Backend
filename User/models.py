@@ -68,14 +68,17 @@ class User(db.Document):
         self.save()
 
 class Ticket(db.Document):
+    owner = db.StringField()
     area = db.StringField()
     price = db.IntField()
-    owner = db.StringField()
     type = db.StringField()
-    def creatTicket(self,area:str,price:int,type:str):
+    stuts = db.StringField() #For sale, To buy, In transaction,completed
+    def creatTicket(self,owner:str,area:str,price:int,type:str,stuts:str):
+        self.owner = owner
         self.area = area
         self.price = price
         self.type = type
+        self.stuts = stuts
         self.save()
 
 class Event(db.Document):
@@ -88,6 +91,10 @@ class Event(db.Document):
         self.date = date
         self.location = location
         self.tick = []
+        self.save()
+
+    def addTicket(self,tick:Ticket):
+        self.tick.append(tick)
         self.save()
     
 class Activity(db.Document):
