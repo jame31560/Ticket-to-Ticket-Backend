@@ -9,8 +9,8 @@ PORT = ""
 LOCAL = True
 
 
-MONGOALCHEMY_DATABASE = ""
-MONGOALCHEMY_CONNECTION_STRING = "://:@:"
+MONGODB_DB = "testDB"
+MONGODB_URI = "mongodb://username:password@localhost:27010/testDB?authSource=admin"
 
 
 JWT_SECRET_KEY = ""

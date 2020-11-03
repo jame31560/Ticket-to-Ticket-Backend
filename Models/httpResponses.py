@@ -8,6 +8,7 @@ class Res():
         403: "Forbidden",
         404: "Not Found",
         409: "Conflict",
+        500: "Server Error"
     }
 
     @classmethod
@@ -35,10 +36,9 @@ class Res():
         }, 204
 
     @classmethod
-    def Abort(self, code, message=None):
-        return abort(
-            code,
-            status="failed",
-            data=None,
-            message=message or self.status.get(code, "Error")
-        )
+    def ResErr(self, code, message=None):
+        return {
+            "status": "FAILED",
+            "data": None,
+            "message": message or self.status.get(code, "Error")
+        }, code
