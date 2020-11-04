@@ -1,4 +1,5 @@
 
+from jsonschema.exceptions import ValidationError
 from Models.response_models.Auth import AuthCreateRes
 from Models.request_models.Auth import AuthCreateReq
 from Models.httpResponses import Res
@@ -10,6 +11,8 @@ from flask_restful_swagger_2 import swagger
 from flask_jwt_extended import create_access_token
 
 from Models.httpResponses import Res
+from jsonschema import validate
+import traceback
 
 
 class AuthController(Resource):
@@ -43,6 +46,20 @@ class AuthController(Resource):
     def post(self):
         try:
             input_json = request.json
+            validate(request.json, {
+                "properties": {
+                    'username': {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 20
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                },
+                "required": ['username', 'password']
+            })
             user = Users.objects(username=input_json["username"]).first()
             if user and user.checkPassword(input_json["password"]):
                 if not user.verify:
@@ -59,5 +76,8 @@ class AuthController(Resource):
                 )
                 return Res.Res201(result)
             return Res.ResErr(401, "Bad Username/Password")
+        except ValidationError as e:
+            return Res.ResErr(400, "Invalid JSON document")
         except:
+            traceback.print_exc()
             return Res.ResErr(500)
