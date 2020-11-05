@@ -1,7 +1,6 @@
 
+from Swagger_Docs.Auth import Auth_Create_Doc
 from jsonschema.exceptions import ValidationError
-from Models.response_models.Auth import Auth_Create_Res
-from Models.request_models.Auth import Auth_Create_Req
 from Models.Http_Responses import Res
 from Models.Users import Users
 from datetime import timedelta
@@ -14,33 +13,7 @@ import traceback
 
 
 class Auth_Controller(Resource):
-    @swagger.doc({
-        "tags": ["Auth"],
-        "description": "Create a JWT",
-        "parameters": [{
-            "name": "body",
-            "in": "body",
-            "schema": Auth_Create_Req,
-            "required": True
-        }],
-        "responses": {
-            "201": {
-                "description": "JWT Token Created",
-                "schema": Auth_Create_Res,
-                "examples": {
-                    "application/json": {
-                        "email": "test@test.com",
-                        "id": "5f8ddddd86c605f565",
-                        "name": "test",
-                        "point": 0,
-                        "role": 0,
-                        "token": "json.web.token",
-                        "username": "test"
-                    }
-                }
-            }
-        }
-    })
+    @swagger.doc(Auth_Create_Doc)
     def post(self):
         try:
             input_json = request.json

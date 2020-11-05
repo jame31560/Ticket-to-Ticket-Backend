@@ -1,5 +1,5 @@
 from config import DOMAIN, LOCAL,  PORT
-from controller.Auth_Controller import Auth_Controller
+from Controller.Auth_Controller import Auth_Controller
 from flask_restful_swagger_2 import Api
 
 from app import app
