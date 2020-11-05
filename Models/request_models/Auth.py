@@ -1,7 +1,7 @@
 from flask_restful_swagger_2 import Schema
 
 
-class AuthCreateReq(Schema):
+class Auth_Create_Req(Schema):
     type = 'object'
     properties = {
         'username': {

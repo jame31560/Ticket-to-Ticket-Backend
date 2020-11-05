@@ -1,9 +1,5 @@
 from config import DOMAIN, LOCAL,  PORT
-from controller.authorizer_controller import AuthController
-import os
-
-from flask import jsonify
-from flask_json_schema import JsonValidationError
+from controller.Auth_Controller import Auth_Controller
 from flask_restful_swagger_2 import Api
 
 from app import app
@@ -20,7 +16,7 @@ api = Api(app,
           api_version='0.0.1',
           api_spec_url='/api/swagger')
 
-api.add_resource(AuthController, "/api/auth")
+api.add_resource(Auth_Controller, "/api/auth")
 
 
 if __name__ == "__main__":

@@ -4,43 +4,20 @@
 
 Note: Recommend using virtual environment.
 
-```
+```shell
 (ENV)$ pip3 install -r requirement.txt
 ```
 
 ## Create Config File
 
-Add `config.py` and put the following content.
-`[XXX]` means the variable which you need to replace it.
+Copy `config.py.sample` as `config.py` and change value in it.
 
-```python
-class Config(object):
-    DEBUG = True
-    CSRF_ENABLED = True
-    BASE_URL = ""
-    MAIL_PASSWORD = ""
-    MAIL_USERNAME = ""
-
-
-class Configdb(Config):
-    MONGOALCHEMY_DATABASE = "[DB_name]"
-    MONGOALCHEMY_CONNECTION_STRING = "mongodb://[username]:[password]@[server]/[DB_name]"
-
-
-class ConfigJWT(Config):
-    JWT_SECRET_KEY = "[your_JWT_KEY]"
-
-
-class ConfigSwagger(Config):
-    SWAGGER = {
-        "url_prefix": "/[swagger_base_url]"
-    }
+```shell
+(ENV)$ cp config.py.sample config.py
 ```
 
-## Run app (Test)
+## Run app (Local)
 
-Recommend useing wsgi to run app when publish.
-
-```
-(ENV)$ python run.py
+```shell
+(ENV)$ python api.py
 ```

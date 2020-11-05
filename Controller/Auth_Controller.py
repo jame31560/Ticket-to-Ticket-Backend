@@ -1,34 +1,32 @@
 
 from jsonschema.exceptions import ValidationError
-from Models.response_models.Auth import AuthCreateRes
-from Models.request_models.Auth import AuthCreateReq
-from Models.httpResponses import Res
+from Models.response_models.Auth import Auth_Create_Res
+from Models.request_models.Auth import Auth_Create_Req
+from Models.Http_Responses import Res
 from Models.Users import Users
 from datetime import timedelta
 from flask import request
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from flask_jwt_extended import create_access_token
-
-from Models.httpResponses import Res
 from jsonschema import validate
 import traceback
 
 
-class AuthController(Resource):
+class Auth_Controller(Resource):
     @swagger.doc({
         "tags": ["Auth"],
         "description": "Create a JWT",
         "parameters": [{
             "name": "body",
             "in": "body",
-            "schema": AuthCreateReq,
+            "schema": Auth_Create_Req,
             "required": True
         }],
         "responses": {
             "201": {
                 "description": "JWT Token Created",
-                "schema": AuthCreateRes,
+                "schema": Auth_Create_Res,
                 "examples": {
                     "application/json": {
                         "email": "test@test.com",
