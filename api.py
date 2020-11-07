@@ -5,7 +5,6 @@ from flask_restful_swagger_2 import Api
 
 from app import app
 
-
 def is_local():
     return True if LOCAL else False
 

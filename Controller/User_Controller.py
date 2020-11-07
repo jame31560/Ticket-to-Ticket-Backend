@@ -1,5 +1,4 @@
 
-from Swagger_Docs.Auth import Auth_Create_Doc
 from jsonschema.exceptions import ValidationError
 from Models.Http_Responses import Res
 from Models.Users import Users
@@ -13,7 +12,6 @@ import traceback
 
 
 class User_Controller(Resource):
-    @swagger.doc(Auth_Create_Doc)
     def post(self):
         try:
             input_json = request.json
