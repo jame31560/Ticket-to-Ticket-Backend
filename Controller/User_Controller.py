@@ -1,4 +1,5 @@
 
+from Swagger_Docs.User import User_Create_Doc
 from jsonschema.exceptions import ValidationError
 from Models.Http_Responses import Res
 from Models.Users import Users
@@ -12,6 +13,7 @@ import traceback
 
 
 class User_Controller(Resource):
+    @swagger.doc(User_Create_Doc)
     def post(self):
         try:
             input_json = request.json
@@ -19,7 +21,6 @@ class User_Controller(Resource):
                 "properties": {
                     'name': {
                         "type": "string",
-                        "minLength": 4,
                         "maxLength": 20
                     },
                     "username":{
@@ -50,7 +51,7 @@ class User_Controller(Resource):
             new_user = Users()
             new_user.signup(input_json["name"],input_json["username"],
                             input_json["password"],input_json["email"])
-            return Res.Res201("SUCESS")
+            return Res.Res201(input_json)
         except ValidationError as e:
             return Res.ResErr(400, "Invalid JSON document")
         except:

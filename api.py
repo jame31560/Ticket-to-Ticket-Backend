@@ -17,7 +17,7 @@ api = Api(app,
           api_spec_url='/api/swagger')
 
 api.add_resource(Auth_Controller, "/api/auth")
-api.add_resource(User_Controller, "/api/signup")
+api.add_resource(User_Controller, "/api/user")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)
