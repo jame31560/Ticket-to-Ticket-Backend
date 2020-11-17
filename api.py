@@ -1,7 +1,7 @@
 from config import DOMAIN, LOCAL,  PORT
 from Controller.Auth_Controller import Auth_Controller
 from Controller.User_Controller import User, UserList
-from flask_restful_swagger_2 import Api, swagger
+from flask_restful_swagger_2 import Api
 
 from app import app
 

@@ -1,5 +1,5 @@
 
-from flask.globals import current_app
+
 from Swagger_Docs.User import User_Create_Doc
 from jsonschema.exceptions import ValidationError as json_Error
 from mongoengine.errors import ValidationError as Mongo_Validation_Error
@@ -178,6 +178,126 @@ class User(Resource):
                 return Res.ResErr(404, "User Not Found")
         except Mongo_Validation_Error:
             return Res.ResErr(404, "User Not Found")
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
+
+    @swagger.doc({
+        "tags": ["User"],
+        "description": "Change User information",
+        "security": [
+            {
+                "Bearer": []
+            }
+        ],
+        "parameters": [{
+            "in": "path",
+            "name": "user_id",
+            "type": "string",
+            "required": True,
+            "description": "Hex ID of the user to get"
+        },
+            {
+            "name": "body",
+            "in": "body",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    'name': {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "username": {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 20
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "newPassword": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "checkPassword": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    }
+                },
+                "required": ["password"]
+            },
+            "required": True
+        }],
+        "responses": {
+            "200": {
+                "description": "User",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "username": {"type": "string"},
+                        "email": {"type": "string",
+                                  "format": "email"},
+                        "point": {"type": "integer"},
+                        "role": {"type": "integer"},
+                    }
+                },
+                "examples": {
+                    "application/json": {
+                        "id": "1234567890abcdef12345678",
+                        "name": "name",
+                        "username": "username",
+                        "email": "test@test.com",
+                        "point": 100,
+                        "role": 0
+                    }
+                }
+            }
+        }
+    })
+    @jwt_required
+    def put(self, user_id):
+        try:
+            input_json = request.json
+            validate(input_json, {
+                "properties": {
+                    'name': {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "username": {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 20
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "newPwassword": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "checkPassword": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    }
+                },
+                "required": ["password"]
+            })
+            pass
+        except json_Error as e:
+            return Res.ResErr(400, "Invalid JSON document")
         except:
             traceback.print_exc()
             return Res.ResErr(500)
