@@ -3,13 +3,12 @@ from Swagger_Docs.User import User_Create_Doc
 from jsonschema.exceptions import ValidationError
 from Models.Http_Responses import Res
 from Models.Users import Users
-from datetime import timedelta
 from flask import request
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
-from flask_jwt_extended import create_access_token
 from jsonschema import validate
 import traceback
+import re
 
 
 class User_Controller(Resource):
@@ -23,7 +22,7 @@ class User_Controller(Resource):
                         "type": "string",
                         "maxLength": 20
                     },
-                    "username":{
+                    "username": {
                         "type": "string",
                         "minLength": 4,
                         "maxLength": 20
@@ -32,16 +31,20 @@ class User_Controller(Resource):
                         "type": "string",
                         "minLength": 8
                     },
-                    "checkpassword":{
+                    "checkpassword": {
                         "type": "string",
                         "minLength": 8
                     },
-                    "email":{
+                    "email": {
                         "type": "string",
+                        "format": "email"
                     }
                 },
-                "required": ['name','username', 'password','checkpassword','email']
+                "required": ['name', 'username', 'password', 'checkpassword', 'email']
             })
+            regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+            if not re.search(regex, input_json["email"]):
+                return Res.ResErr(400, "Bad email")
             if input_json["password"] != input_json["checkpassword"]:
                 return Res.ResErr(400, "PASSWORD NOT EQUAL")
             if Users.objects(email=input_json["email"]).count() > 0:
@@ -49,8 +52,8 @@ class User_Controller(Resource):
             if Users.objects(username=input_json["username"]).count() > 0:
                 return Res.ResErr(400, "USERNAME USED")
             new_user = Users()
-            new_user.signup(input_json["name"],input_json["username"],
-                            input_json["password"],input_json["email"])
+            new_user.signup(input_json["name"], input_json["username"],
+                            input_json["password"], input_json["email"])
             return Res.Res201(input_json)
         except ValidationError as e:
             return Res.ResErr(400, "Invalid JSON document")

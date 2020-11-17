@@ -8,7 +8,7 @@ class User_Create_Req(Schema):
             "type": "string",
             "maxLength": 20
         },
-        "username":{
+        "username": {
             "type": "string",
             "minLength": 4,
             "maxLength": 20
@@ -17,12 +17,13 @@ class User_Create_Req(Schema):
             "type": "string",
             "minLength": 8
         },
-        "checkpassword":{
+        "checkpassword": {
             "type": "string",
             "minLength": 8
         },
-        "email":{
+        "email": {
             "type": "string",
+            "format": "email"
         }
     }
-    required = ['name','username', 'password','checkpassword','email']
+    required = ['name', 'username', 'password', 'checkpassword', 'email']
