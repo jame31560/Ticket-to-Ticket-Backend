@@ -1,4 +1,5 @@
 
+from flask.globals import current_app
 from Swagger_Docs.User import User_Create_Doc
 from jsonschema.exceptions import ValidationError as json_Error
 from mongoengine.errors import ValidationError as Mongo_Validation_Error
@@ -79,7 +80,7 @@ class User(Resource):
             "name": "user_id",
             "type": "string",
             "required": True,
-            "description": "Numeric ID of the user to get"
+            "description": "Numeric ID of the user to delete"
         }],
         "responses": {
             "200": {
@@ -108,6 +109,71 @@ class User(Resource):
             if user:
                 user.delete()
                 return Res.Res200()
+            else:
+                return Res.ResErr(404, "User Not Found")
+        except Mongo_Validation_Error:
+            return Res.ResErr(404, "User Not Found")
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
+
+    @swagger.doc({
+        "tags": ["User"],
+        "description": "Get a User",
+        "security": [
+            {
+                "Bearer": []
+            }
+        ],
+        "parameters": [{
+            "in": "path",
+            "name": "user_id",
+            "type": "string",
+            "required": True,
+            "description": "Hex ID of the user to get"
+        }],
+        "responses": {
+            "200": {
+                "description": "User",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "username": {"type": "string"},
+                        "email": {"type": "string",
+                                  "format": "email"},
+                        "point": {"type": "integer"},
+                        "role": {"type": "integer"},
+                    }
+                },
+                "examples": {
+                    "application/json": {
+                        "id": "1234567890abcdef12345678",
+                        "name": "name",
+                        "username": "username",
+                        "email": "test@test.com",
+                        "point": 100,
+                        "role": 0
+                    }
+                }
+            }
+        }
+    })
+    @jwt_required
+    def get(self, user_id):
+        try:
+            jwt_user = get_jwt_identity()
+            current_user = Users.objects(id=jwt_user["id"]).first()
+            if current_user is None:
+                return Res.ResErr(403)
+            query_user = Users.objects(id=user_id).first()
+            if query_user:
+                if (str(query_user.id) == str(current_user.id) or
+                        current_user.role == 1):
+                    return Res.Res200(query_user.get_info())
+                else:
+                    return Res.ResErr(404)
             else:
                 return Res.ResErr(404, "User Not Found")
         except Mongo_Validation_Error:
