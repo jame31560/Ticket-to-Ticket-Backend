@@ -1,6 +1,7 @@
 from config import DOMAIN, LOCAL,  PORT
 from Controller.Auth_Controller import Auth_Controller
 from Controller.User_Controller import User_Controller
+from Controller.Chatroom_Controller import Chatroom_Controller
 from flask_restful_swagger_2 import Api
 
 from app import app
@@ -18,6 +19,7 @@ api = Api(app,
 
 api.add_resource(Auth_Controller, "/api/auth")
 api.add_resource(User_Controller, "/api/user")
+api.add_resource(Chatroom_Controller, "/api/chatroom")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)

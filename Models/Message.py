@@ -1,7 +1,7 @@
 import mongoengine as db
 from datetime import datetime
 
-class Message(db.Document):
+class Message(db.EmbeddedDocument):
     sender = db.StringField()
     content = db.StringField()
     sendtime = db.DateTimeField()

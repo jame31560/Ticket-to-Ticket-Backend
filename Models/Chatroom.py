@@ -3,7 +3,7 @@ from .Message import Message
 
 class Chatroom(db.Document):
     roomname = db.StringField()
-    Messagelist = db.EmbeddedDocumentListField(Message)
+    Messagelist = db.EmbeddedDocumentListField(Message, default= [])
 
     def createChatroom(self,name:str):
         self.roomname = name
