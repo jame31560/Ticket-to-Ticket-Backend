@@ -3,11 +3,9 @@ from Swagger_Docs.User import User_Create_Doc
 from jsonschema.exceptions import ValidationError
 from Models.Http_Responses import Res
 from Models.Users import Users
-from datetime import timedelta
 from flask import request
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
-from flask_jwt_extended import create_access_token
 from jsonschema import validate
 import traceback
 

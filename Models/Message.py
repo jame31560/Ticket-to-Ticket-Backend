@@ -9,4 +9,4 @@ class Message(db.EmbeddedDocument):
     def createMessage(self,sender: str,content: str):
         self.sender = sender
         self.content = content
-        self.date = datetime.now()
+        self.sendtime = datetime.now()
