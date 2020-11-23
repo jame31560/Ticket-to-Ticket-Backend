@@ -1,19 +1,26 @@
-import mongoengine as db
+import mongoengine
+from mongoengine import document
+from mongoengine.fields import *
+from mongoengine.document import *
 from .Mail import Mail
 
 from passlib.hash import pbkdf2_sha256
 from datetime import datetime
 
 
-class Users(db.Document):
-    name = db.StringField()
-    username = db.StringField()
-    password = db.StringField()
-    email = db.EmailField()
-    verify = db.BooleanField()
-    point = db.IntField()
-    role = db.IntField()
-    token = db.StringField()
+class Users(Document):
+    name = StringField()
+    username = StringField()
+    password = StringField()
+    email = EmailField()
+    verify = BooleanField()
+    point = IntField()
+    role = IntField()
+    token = StringField()
+    sex = IntField()
+    birthday = DateField()
+    phone = StringField()
+    city = StringField()
 
     def signup(self, name: str,
                username: str, password: str, email: str) -> None:
