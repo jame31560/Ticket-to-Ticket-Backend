@@ -1,3 +1,4 @@
+from Controller.Activity_Controller import Activity
 from config import DOMAIN, LOCAL,  PORT
 from Controller.Auth_Controller import Auth_Controller
 from Controller.User_Controller import User, UserList, Validation
@@ -28,6 +29,7 @@ api.add_resource(Auth_Controller, "/api/auth")
 api.add_resource(UserList, "/api/users")
 api.add_resource(User, "/api/users/<string:user_id>")
 api.add_resource(Validation, "/api/validation")
+api.add_resource(Activity, "/api/activity/<string:activity_id>")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)

@@ -62,6 +62,8 @@ class Validation(Resource):
                 return Res.ResErr(404)
             user.verify_email()
             return Res.Res200()
+        except json_Error as e:
+            return Res.ResErr(400, "Invalid JSON document")
         except:
             traceback.print_exc()
             return Res.ResErr(500)
