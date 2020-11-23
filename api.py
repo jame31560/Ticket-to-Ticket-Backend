@@ -1,6 +1,6 @@
 from config import DOMAIN, LOCAL,  PORT
 from Controller.Auth_Controller import Auth_Controller
-from Controller.User_Controller import User, UserList
+from Controller.User_Controller import User, UserList, Validation
 from flask_restful_swagger_2 import Api
 
 from app import app
@@ -27,6 +27,7 @@ api = Api(app,
 api.add_resource(Auth_Controller, "/api/auth")
 api.add_resource(UserList, "/api/users")
 api.add_resource(User, "/api/users/<string:user_id>")
+api.add_resource(Validation, "/api/validation")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)

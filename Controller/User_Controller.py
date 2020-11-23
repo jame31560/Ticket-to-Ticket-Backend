@@ -14,6 +14,51 @@ import traceback
 import re
 
 
+class Validation(Resource):
+    @swagger.doc({
+        "tags": ["Validation"],
+        "description": "verify an User email",
+        "parameters": [{
+            "name": "body",
+            "in": "body",
+            "schema": {
+                    "type": "object",
+                    "properties": {
+                        'token': {
+                            "type": "string"
+                        },
+                    },
+                "required": ["token"]
+            },
+            "required": True
+        }],
+        "responses": {
+            "200": {
+                "description": "User Verified",
+                "schema": {},
+                "examples": {
+                    "application/json": {
+                        "status": "SUCCESS",
+                        "data": None,
+                        "message": "OK"
+                    }
+                }
+            }
+        }
+    })
+    def put(self):
+        try:
+            input_json = request.json
+            user = Users.objects(token=input_json["token"]).first()
+            if not user:
+                return Res.ResErr(404)
+            user.verify_email()
+            return Res.Res200()
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
+
+
 class UserList(Resource):
     @swagger.doc(User_Create_Doc)
     def post(self):
@@ -190,49 +235,50 @@ class User(Resource):
                 "Bearer": []
             }
         ],
-        "parameters": [{
-            "in": "path",
-            "name": "user_id",
-            "type": "string",
-            "required": True,
-            "description": "Hex ID of the user to get"
-        },
+        "parameters": [
             {
-            "name": "body",
-            "in": "body",
-            "schema": {
-                "type": "object",
-                "properties": {
-                    'name': {
-                        "type": "string",
-                        "maxLength": 20
-                    },
-                    "username": {
-                        "type": "string",
-                        "minLength": 4,
-                        "maxLength": 20
-                    },
-                    "password": {
-                        "type": "string",
-                        "minLength": 8
-                    },
-                    "newPassword": {
-                        "type": "string",
-                        "minLength": 8
-                    },
-                    "checkPassword": {
-                        "type": "string",
-                        "minLength": 8
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email"
-                    }
-                },
-                "required": ["password"]
+                "in": "path",
+                "name": "user_id",
+                "type": "string",
+                "required": True,
+                "description": "Hex ID of the user to get"
             },
-            "required": True
-        }],
+            {
+                "name": "body",
+                "in": "body",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        'name': {
+                            "type": "string",
+                            "maxLength": 20
+                        },
+                        "username": {
+                            "type": "string",
+                            "minLength": 4,
+                            "maxLength": 20
+                        },
+                        "password": {
+                            "type": "string",
+                            "minLength": 8
+                        },
+                        "newPassword": {
+                            "type": "string",
+                            "minLength": 8
+                        },
+                        "checkPassword": {
+                            "type": "string",
+                            "minLength": 8
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        }
+                    },
+                    "required": ["password"]
+                },
+                "required": True
+            }],
         "responses": {
             "200": {
                 "description": "User",
