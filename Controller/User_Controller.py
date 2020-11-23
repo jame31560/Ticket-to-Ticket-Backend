@@ -49,6 +49,14 @@ class Validation(Resource):
     def put(self):
         try:
             input_json = request.json
+            validate(input_json, {
+                "properties": {
+                    'token': {
+                        "type": "string"
+                    },
+                },
+                "required": ['token']
+            })
             user = Users.objects(token=input_json["token"]).first()
             if not user:
                 return Res.ResErr(404)
