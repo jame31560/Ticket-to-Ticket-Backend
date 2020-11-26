@@ -1,7 +1,7 @@
 from flask_restful_swagger_2 import Schema
 
 
-class Sendmsg_Create_Req(Schema):
+class Message_Create_Req(Schema):
     type = 'object'
     properties = {
         'roomId': {

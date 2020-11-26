@@ -1,5 +1,5 @@
 from Swagger_Docs.Chatroom import Chatroom_Create_Doc
-from Swagger_Docs.Snedmsg import Sendmsg_Create_Doc
+from Swagger_Docs.Message import Message_Create_Doc
 from jsonschema.exceptions import ValidationError
 from Models.Http_Responses import Res
 from flask import request
@@ -10,6 +10,7 @@ from jsonschema import validate
 import traceback
 from Models.Chatroom import Chatroom
 from Models.Message import Message
+import json
 
 class Chatroom_Controller(Resource):
     @swagger.doc(Chatroom_Create_Doc)
@@ -34,8 +35,8 @@ class Chatroom_Controller(Resource):
             traceback.print_exc()
             return Res.ResErr(500)
 
-class Sendmsg_Controller(Resource):
-    @swagger.doc(Sendmsg_Create_Doc)
+class Message_Controller(Resource):
+    @swagger.doc(Message_Create_Doc)
     @jwt_required
     def post(self):
         try:
@@ -43,19 +44,18 @@ class Sendmsg_Controller(Resource):
             input_json = request.json
             validate(request.json, {
                 "properties": {
-                    'roomname': {
+                    'roomid': {
                         "type": "string",
-                        "maxLength": 20
                     },
                     'msg':{
                         "type": "string"
                     }
                 },
-                "required": ['roomname','msg']
+                "required": ['roomid','msg']
             })
             new_msg = Message()
             new_msg.createMessage(current_user["username"],input_json["msg"])
-            chatroom = Chatroom.objects(roomname=input_json["roomname"]).first()
+            chatroom = Chatroom.objects(id=input_json["roomid"]).first()
             chatroom.appendMessage(new_msg)
             return Res.Res201(input_json)
         except ValidationError as e:
