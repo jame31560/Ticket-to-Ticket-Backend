@@ -96,10 +96,23 @@ class UserList(Resource):
                     "email": {
                         "type": "string",
                         "format": "email"
+                    },
+                    "sex":{
+                        "type":"integer"
+                    },
+                    "bd":{
+                        "type":"string",
+                        "maxLength": 10
+                    },
+                    "phone":{
+                        "type":"string"
+                    },
+                    "city":{
+                        "type":"string"
                     }
                 },
                 "required": ['name', 'username', 'password',
-                             'checkpassword', 'email']
+                             'checkpassword', 'email','sex','bd','phone','city']
             })
             regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
             if not re.search(regex, input_json["email"]):
@@ -112,7 +125,9 @@ class UserList(Resource):
                 return Res.ResErr(400, "USERNAME USED")
             new_user = Users()
             new_user.signup(input_json["name"], input_json["username"],
-                            input_json["password"], input_json["email"])
+                            input_json["password"], input_json["email"],
+                            input_json["sex"],input_json["bd"],
+                            input_json["phone"],input_json["city"])
             return Res.Res201(input_json)
         except json_Error as e:
             return Res.ResErr(400, "Invalid JSON document")

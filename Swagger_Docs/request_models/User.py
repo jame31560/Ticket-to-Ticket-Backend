@@ -24,6 +24,20 @@ class User_Create_Req(Schema):
         "email": {
             "type": "string",
             "format": "email"
+        },
+        "sex":{
+            "type":"interger"
+        },
+        "bd":{
+            "type":"string",
+            "maxLength": 10
+        },
+        "phone":{
+            "type":"string"
+        },
+        "city":{
+            "type":"string"
         }
+        
     }
-    required = ['name', 'username', 'password', 'checkpassword', 'email']
+    required = ['name', 'username', 'password', 'checkpassword', 'email','sex','bd','phone','city']

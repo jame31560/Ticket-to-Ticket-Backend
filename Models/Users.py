@@ -3,7 +3,6 @@ from mongoengine import document
 from mongoengine.fields import *
 from mongoengine.document import *
 from .Mail import Mail
-
 from passlib.hash import pbkdf2_sha256
 from datetime import datetime
 
@@ -23,11 +22,15 @@ class Users(Document):
     city = StringField()
 
     def signup(self, name: str,
-               username: str, password: str, email: str) -> None:
+               username: str, password: str, email: str,sex: int,bd: str,
+               phone: str,city: str) -> None:
         self.name = name
         self.username = username
         self.password = pbkdf2_sha256.encrypt(password)
         self.email = email
+        self.sex = sex
+        self.birthday = datetime.strptime((bd), "%Y-%m-%d")
+        self.city = city
         self.verify = False
         self.point = 0
         self.role = 0
