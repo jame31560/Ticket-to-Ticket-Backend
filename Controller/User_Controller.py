@@ -342,11 +342,6 @@ class User(Resource):
                         "type": "string",
                         "maxLength": 20
                     },
-                    "username": {
-                        "type": "string",
-                        "minLength": 4,
-                        "maxLength": 20
-                    },
                     "password": {
                         "type": "string",
                         "minLength": 8
@@ -362,11 +357,37 @@ class User(Resource):
                     "email": {
                         "type": "string",
                         "format": "email"
+                    },
+                    "city": {
+                        "type": "string",
                     }
                 },
                 "required": ["password"]
             })
-            pass
+            jwt_user = get_jwt_identity()
+            current_user = Users.objects(id=jwt_user["id"]).first()
+            if current_user.checkPassword(input_json["password"]):
+                try:
+                    current_user.changeName(input_json["name"])
+                except:
+                    pass
+                try:
+                    if input_json["newPassword"] != input_json["checkPassword"]:
+                        return Res.ResErr(400, "PASSWORD NOT EQUAL")
+                    current_user.changePassword(input_json["newPassword"])
+                except:
+                    pass 
+                try:
+                    current_user.changeCity(input_json["city"])
+                except:
+                    pass
+                try:
+                    current_user.changeEmail(input_json["email"])
+                except:
+                    pass
+                return Res.Res200(current_user.get_info())              
+            else:
+                return Res.ResErr(401, "Bad Password")
         except json_Error as e:
             return Res.ResErr(400, "Invalid JSON document")
         except:

@@ -59,6 +59,22 @@ class Users(Document):
             return True
         except:
             return False
+    
+    def changeCity(self, city:str):
+        try:
+            self.city = city
+            self.save()
+            return True
+        except:
+            return False
+
+    def changeEmail(self, email:str):
+        try:
+            self.email = email
+            self.save()
+            return True
+        except:
+            return False
 
     def get_info(self) -> dict:
         return {
@@ -66,6 +82,10 @@ class Users(Document):
             "name": self.name,
             "username": self.username,
             "email": self.email,
+            "city":self.city,
+            "sex":self.sex,
+            "phone":self.phone,
+            "birthday":self.birthday.strftime('%Y-%m-%d'),
             "point": self.point,
             "role": self.role
         }
