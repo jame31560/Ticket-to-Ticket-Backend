@@ -6,6 +6,140 @@ from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from jsonschema import validate
 import traceback
+from Models import Activitys
+
+
+class ActivityList(Resource):
+    # def get(self):
+    #     try:
+    #         result = Activitys.objects().to_json()
+    #         return Res.Res200(result)
+    #     except:
+    #         traceback.print_exc()
+    #         return Res.ResErr(500)
+
+    @swagger.doc({
+        "tags": ["Activity"],
+        "description": "Add an activity",
+        "security": [
+            {
+                "Bearer": []
+            }
+        ],
+        "parameters": [{
+            "name": "body",
+            "in": "body",
+            "schema": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "artis": {
+                            "type":  "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "website": {
+                            "type":  "string",
+                            "format": "uri"
+                        },
+                        "events": {
+                            "type":  "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "seating_map_url": {
+                                        "type": "string",
+                                        "format": "uri"
+                                    },
+                                    "venue": {
+                                        "type": "string"
+                                    },
+                                    "area_groups": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "areas": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "counter": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "type": {
+                                                                "type": "integer"
+                                                            },
+                                                            "ticket_type": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "price": {
+                                                                            "type": "integer"
+                                                                        }
+                                                                    },
+                                                                    "required": ["name", "price"]
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": ["name", "counter", "type", "ticket_type"]
+                                                    }
+                                                }
+                                            },
+                                            "required": ["name", "areas"]
+                                        }
+                                    }
+                                },
+                                "required": ["date", "name", "venue", "area_groups"]
+                            }
+                        }
+                    },
+                "required": ["name", "artis", "event"]
+            },
+            "required": True
+        }],
+        "responses": {
+            "200": {
+                "description": "Activity Created",
+                "schema": {},
+                "examples": {
+                    "application/json": {
+                        "status": "SUCCESS",
+                        "data": None,
+                        "message": "OK"
+                    }
+                }
+            }
+        }
+    })
+    @jwt_required
+    def post(self):
+        try:
+            result = Activitys.objects().to_json()
+            return Res.Res200(result)
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
 
 
 class Activity(Resource):
@@ -69,7 +203,6 @@ class Activity(Resource):
             }
         }
     })
-    @jwt_required
     def get(self):
         try:
             input_json = request.json
