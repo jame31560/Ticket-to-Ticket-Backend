@@ -13,13 +13,33 @@ from Models.Users import Users
 
 
 class ActivityList(Resource):
-    # def get(self):
-    #     try:
-    #         result = Activitys.objects().to_json()
-    #         return Res.Res200(result)
-    #     except:
-    #         traceback.print_exc()
-    #         return Res.ResErr(500)
+    @swagger.doc({
+        "tags": ["Activity"],
+        "description": "Get Activitys",
+        "responses": {
+            "200": {
+                "description": "Activitys",
+                "schema": {},
+                "examples": {
+                    "application/json": {
+                        "id": "1234567890abcdef12345678",
+                        "name": "name",
+                        "username": "username",
+                        "email": "test@test.com",
+                        "point": 100,
+                        "role": 0
+                    }
+                }
+            }
+        }
+    })
+    def get(self):
+        try:
+            result = Activitys.objects().to_json()
+            return Res.Res200(json.loads(result))
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
 
     @swagger.doc({
         "tags": ["Activity"],
@@ -131,7 +151,123 @@ class ActivityList(Resource):
                 "examples": {
                     "application/json": {
                         "status": "SUCCESS",
-                        "data": None,
+                        "data": {
+                            "_id": {
+                                "$oid": "5fd87ceaab5c2bb24eda40e8"
+                            },
+                            "event_type": 0,
+                            "name": "五月天 [ 好好好想見到你 ] Mayday Fly to 2021 演唱會",
+                            "website": "https://tixcraft.com/activity/detail/20_MAYDAY",
+                            "events": [
+                                    {
+                                        "_id": {
+                                            "$oid": "5fd87ceaab5c2bb24eda40dd"
+                                        },
+                                        "date": {
+                                            "$date": 1608921000000
+                                        },
+                                        "name": "五月天 [ 好好好想見到你 ] Mayday Fly to 2021 演唱會",
+                                        "venue": "桃園國際棒球場",
+                                        "area_groups": [
+                                            {
+                                                "_id": {
+                                                    "$oid": "5fd87ceaab5c2bb24eda40de"
+                                                },
+                                                "name": "好好搖滾區",
+                                                "areas": [
+                                                    {
+                                                        "_id": {
+                                                            "$oid": "5fd87ceaab5c2bb24eda40df"
+                                                        },
+                                                        "name": "好好搖滾區 A1",
+                                                        "ticket_types": [
+                                                            {
+                                                                "_id": {
+                                                                    "$oid": "5fd87ceaab5c2bb24eda40e0"
+                                                                },
+                                                                "name": "全票",
+                                                                "price": 3880
+                                                            }
+                                                        ],
+                                                        "type": 0,
+                                                        "counter": True
+                                                    },
+                                                    {
+                                                        "_id": {
+                                                            "$oid": "5fd87ceaab5c2bb24eda40e1"
+                                                        },
+                                                        "name": "好好搖滾區 A2",
+                                                        "ticket_types": [
+                                                            {
+                                                                "_id": {
+                                                                    "$oid": "5fd87ceaab5c2bb24eda40e2"
+                                                                },
+                                                                "name": "全票",
+                                                                "price": 3880
+                                                            }
+                                                        ],
+                                                        "type": 0,
+                                                        "counter": True
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "_id": {
+                                                    "$oid": "5fd87ceaab5c2bb24eda40e3"
+                                                },
+                                                "name": "西下看台區",
+                                                "areas": [
+                                                    {
+                                                        "_id": {
+                                                            "$oid": "5fd87ceaab5c2bb24eda40e4"
+                                                        },
+                                                        "name": "西下A",
+                                                        "ticket_types": [
+                                                            {
+                                                                "_id": {
+                                                                    "$oid": "5fd87ceaab5c2bb24eda40e5"
+                                                                },
+                                                                "name": "全票",
+                                                                "price": 2880
+                                                            }
+                                                        ],
+                                                        "type": 0,
+                                                        "counter": True
+                                                    },
+                                                    {
+                                                        "_id": {
+                                                            "$oid": "5fd87ceaab5c2bb24eda40e6"
+                                                        },
+                                                        "name": "西下F(視線遮蔽區)",
+                                                        "ticket_types": [
+                                                            {
+                                                                "_id": {
+                                                                    "$oid": "5fd87ceaab5c2bb24eda40e7"
+                                                                },
+                                                                "name": "全票",
+                                                                "price": 1880
+                                                            }
+                                                        ],
+                                                        "type": 0,
+                                                        "counter": True
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        "status": 0,
+                                        "seating_map_url": "https://static.tixcraft.com/images/activity/field/20_MAYDAY_f8eddcfc8d9bfa9f1cecd7fc93e13eda.png"
+                                    }
+                            ],
+                            "mark": {
+                                "agree": 0,
+                                "against": 0
+                            },
+                            "status": 0,
+                            "artis": [
+                                "Mayday 五月天"
+                            ],
+                            "create_user": "5fb412c16df3eeb655736d5b"
+                        },
                         "message": "OK"
                     }
                 }
