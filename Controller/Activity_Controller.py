@@ -1,12 +1,15 @@
+from datetime import datetime
+import json
 from jsonschema.exceptions import ValidationError
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from Models.Http_Responses import Res
 from flask import request
 from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from jsonschema import validate
 import traceback
-from Models import Activitys
+from Models.Activitys import Activitys, Event
+from Models.Users import Users
 
 
 class ActivityList(Resource):
@@ -30,91 +33,94 @@ class ActivityList(Resource):
             "name": "body",
             "in": "body",
             "schema": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "event_type": {
+                        "type": "integer"
+                    },
+                    "artis": {
+                        "type":  "array",
+                        "items": {
                             "type": "string"
-                        },
-                        "artis": {
-                            "type":  "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "website": {
-                            "type":  "string",
-                            "format": "uri"
-                        },
-                        "events": {
-                            "type":  "array",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "date": {
-                                        "type": "string",
-                                        "format": "date-time"
-                                    },
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "seating_map_url": {
-                                        "type": "string",
-                                        "format": "uri"
-                                    },
-                                    "venue": {
-                                        "type": "string"
-                                    },
-                                    "area_groups": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "areas": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string"
-                                                            },
-                                                            "counter": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "type": {
-                                                                "type": "integer"
-                                                            },
-                                                            "ticket_type": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "name": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "price": {
-                                                                            "type": "integer"
-                                                                        }
-                                                                    },
-                                                                    "required": ["name", "price"]
-                                                                }
-                                                            }
-                                                        },
-                                                        "required": ["name", "counter", "type", "ticket_type"]
-                                                    }
-                                                }
-                                            },
-                                            "required": ["name", "areas"]
-                                        }
-                                    }
-                                },
-                                "required": ["date", "name", "venue", "area_groups"]
-                            }
                         }
                     },
-                "required": ["name", "artis", "event"]
+                    "website": {
+                        "type":  "string",
+                        "format": "uri"
+                    },
+                    "events": {
+                        "type":  "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "date": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "seating_map_url": {
+                                    "type": "string",
+                                    "format": "uri"
+                                },
+                                "venue": {
+                                    "type": "string"
+                                },
+                                "area_groups": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "areas": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "counter": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "type": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ticket_types": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "price": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "required": ["name", "price"]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": ["name", "counter", "type", "ticket_types"]
+                                                }
+                                            }
+                                        },
+                                        "required": ["name", "areas"]
+                                    }
+                                }
+                            },
+                            "required": ["date", "name", "venue", "area_groups"]
+                        }
+                    }
+                },
+                "required": ["name", "artis", "event", "event_type", "website"]
             },
             "required": True
         }],
@@ -135,8 +141,113 @@ class ActivityList(Resource):
     @jwt_required
     def post(self):
         try:
-            result = Activitys.objects().to_json()
-            return Res.Res200(result)
+            in_activity = request.json
+            validate(in_activity, {
+                "properties": {
+                    "event_type": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "artis": {
+                        "type":  "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "website": {
+                        "type":  "string",
+                        "format": "uri"
+                    },
+                    "events": {
+                        "type":  "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "date": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "seating_map_url": {
+                                    "type": "string",
+                                    "format": "uri"
+                                },
+                                "venue": {
+                                    "type": "string"
+                                },
+                                "area_groups": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "areas": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "counter": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "type": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ticket_types": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "price": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "required": ["name", "price"]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": ["name", "counter", "type", "ticket_types"]
+                                                }
+                                            }
+                                        },
+                                        "required": ["name", "areas"]
+                                    }
+                                }
+                            },
+                            "required": ["date", "name", "venue", "area_groups"]
+                        }
+                    }
+                },
+                "required": ["name", "artis", "events", "event_type"]
+            })
+            current_user = get_jwt_identity()
+            user = Users.objects(id=current_user["id"]).first()
+            if user is None:
+                return Res.ResErr(403)
+            activity = Activitys(
+                event_type=in_activity["event_type"],
+                name=in_activity["name"],
+                website=in_activity["website"] if "website" in in_activity else None,
+                artis=in_activity["artis"],
+                create_user=current_user["id"]
+            )
+            activity.add_events(in_activity["events"])
+            activity.save()
+            return Res.Res200(json.loads(activity.to_json()))
+        except ValidationError as e:
+            traceback.print_exc()
+            return Res.ResErr(400, "Invalid JSON document")
         except:
             traceback.print_exc()
             return Res.ResErr(500)
@@ -208,7 +319,7 @@ class Activity(Resource):
             input_json = request.json
             validate(request.json, {
                 "properties": {
-                    'username': {
+                    "username": {
                         "type": "string",
                         "minLength": 4,
                         "maxLength": 20
@@ -218,7 +329,7 @@ class Activity(Resource):
                         "minLength": 8
                     }
                 },
-                "required": ['username', 'password']
+                "required": ["username", "password"]
             })
 
         except ValidationError as e:
