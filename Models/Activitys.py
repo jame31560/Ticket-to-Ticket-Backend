@@ -5,13 +5,13 @@ from bson.objectid import ObjectId
 
 
 class Ticket_Type(EmbeddedDocument):
-    # oid = ObjectIdField(required=True, default=ObjectId)
+    oid = ObjectIdField(required=True, default=ObjectId)
     name = StringField()
     price = IntField()
 
 
 class Area(EmbeddedDocument):
-    # oid = ObjectIdField(required=True, default=ObjectId)
+    oid = ObjectIdField(required=True, default=ObjectId)
     name = StringField()
     ticket_types = ListField(EmbeddedDocumentField(Ticket_Type))
     type = IntField()
@@ -29,7 +29,7 @@ class Area(EmbeddedDocument):
 
 
 class Area_Group(EmbeddedDocument):
-    # oid = ObjectIdField(required=True, default=ObjectId)
+    oid = ObjectIdField(required=True, default=ObjectId)
     name = StringField()
     areas = ListField(EmbeddedDocumentField(Area))
 
@@ -47,7 +47,7 @@ class Area_Group(EmbeddedDocument):
 
 
 class Event(EmbeddedDocument):
-    # oid = ObjectIdField(required=True, default=ObjectId)
+    oid = ObjectIdField(required=True, default=ObjectId)
     date = DateTimeField()
     name = StringField()
     venue = StringField()
