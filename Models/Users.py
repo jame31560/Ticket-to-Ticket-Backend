@@ -1,10 +1,12 @@
 import mongoengine
+import json
 from mongoengine import document
 from mongoengine.fields import *
 from mongoengine.document import *
 from .Mail import Mail
 from passlib.hash import pbkdf2_sha256
 from datetime import datetime
+from Models.Ticket import Ticket
 
 
 class Users(Document):
@@ -20,6 +22,7 @@ class Users(Document):
     birthday = DateField()
     phone = StringField()
     city = StringField()
+    tickets = ListField(EmbeddedDocumentField(Ticket), default=[])
 
     def signup(self, name: str,
                username: str, password: str, email: str,sex: int,bd: str,
@@ -30,6 +33,7 @@ class Users(Document):
         self.email = email
         self.sex = sex
         self.birthday = datetime.strptime((bd), "%Y-%m-%d")
+        self.phone = phone
         self.city = city
         self.verify = False
         self.point = 0
@@ -49,6 +53,28 @@ class Users(Document):
             self.password = pbkdf2_sha256.encrypt(newPassword)
             self.save()
             return True
+        except:
+            return False
+
+    def changePhone(self,phone:str):
+        try:
+            self.phone = phone
+            self.save()
+            return True
+        except:
+            return False
+    
+    def changeSex(self,sex:int):
+        try:
+            self.sex = sex
+            self.save()
+        except:
+            return False
+    
+    def changeBirthday(self,bd:str):
+        try:
+            self.birthday = datetime.strptime((bd), "%Y-%m-%d")
+            self.save()
         except:
             return False
 
@@ -94,3 +120,15 @@ class Users(Document):
         self.token = ""
         self.verify = True
         self.save()
+
+    def add_ticket(self,area:str,type:int,exchange:bool,face:bool,intro:str):
+        newTicket = Ticket()
+        newTicket.creatTicket(area,type,exchange,face,intro)
+        self.tickets.append(newTicket)
+        self.save()
+    
+    def get_tickets(self):
+        list = []
+        for ticket in self.tickets:
+            list.append(ticket.get_info())
+        return list 

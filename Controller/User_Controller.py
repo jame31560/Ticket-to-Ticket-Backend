@@ -1,6 +1,7 @@
 
 
 from Swagger_Docs.User import User_Create_Doc
+from Swagger_Docs.Ticket import Ticket_Create_Doc
 from jsonschema.exceptions import ValidationError as json_Error
 from mongoengine.errors import ValidationError as Mongo_Validation_Error
 from Models.Http_Responses import Res
@@ -10,6 +11,7 @@ from flask_restful import Resource
 from flask_restful_swagger_2 import swagger
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from jsonschema import validate
+import json
 import traceback
 import re
 
@@ -171,9 +173,11 @@ class User(Resource):
         try:
             current_user = get_jwt_identity()
             if (current_user["role"] != 1):
+                print("111")
                 return Res.ResErr(403)
             admin = Users.objects(id=current_user["id"]).first()
             if admin is None:
+                print("000")
                 return Res.ResErr(403)
             user = Users.objects(id=user_id).first()
             if user:
@@ -213,17 +217,25 @@ class User(Resource):
                         "username": {"type": "string"},
                         "email": {"type": "string",
                                   "format": "email"},
+                        "city":{"type":"string"},
+                        "sex":{"type":"integer"},
+                        "phonne":{"type":"string"},
+                        "birthday":{"type":"string"},
                         "point": {"type": "integer"},
                         "role": {"type": "integer"},
                     }
                 },
                 "examples": {
                     "application/json": {
-                        "id": "1234567890abcdef12345678",
+                        "id": "5fdf01b67cfda035474d83bb",
                         "name": "name",
                         "username": "username",
-                        "email": "test@test.com",
-                        "point": 100,
+                        "email": "test@gmail.com",
+                        "city": "台中",
+                        "sex": 1,
+                        "phone": "0987654321",
+                        "birthday": "2020-12-31",
+                        "point": 0,
                         "role": 0
                     }
                 }
@@ -278,15 +290,6 @@ class User(Resource):
                             "type": "string",
                             "maxLength": 20
                         },
-                        "username": {
-                            "type": "string",
-                            "minLength": 4,
-                            "maxLength": 20
-                        },
-                        "password": {
-                            "type": "string",
-                            "minLength": 8
-                        },
                         "newPassword": {
                             "type": "string",
                             "minLength": 8
@@ -295,9 +298,26 @@ class User(Resource):
                             "type": "string",
                             "minLength": 8
                         },
+                        "sex":{
+                            "type":"integer"
+                        },
+                        "bd":{
+                            "type":"string"
+                        },
+                        "phone":{
+                            "type":"string",
+                            "maxLength": 10
+                        },
                         "email": {
                             "type": "string",
                             "format": "email"
+                        },
+                        "city": {
+                            "type": "string",
+                        },
+                        "password": {
+                            "type": "string",
+                            "minLength": 8
                         }
                     },
                     "required": ["password"]
@@ -315,17 +335,25 @@ class User(Resource):
                         "username": {"type": "string"},
                         "email": {"type": "string",
                                   "format": "email"},
+                        "city":{"type":"string"},
+                        "sex":{"type":"integer"},
+                        "phonne":{"type":"string"},
+                        "birthday":{"type":"string"},
                         "point": {"type": "integer"},
                         "role": {"type": "integer"},
                     }
                 },
                 "examples": {
                     "application/json": {
-                        "id": "1234567890abcdef12345678",
+                        "id": "5fdf01b67cfda035474d83bb",
                         "name": "name",
                         "username": "username",
-                        "email": "test@test.com",
-                        "point": 100,
+                        "email": "test@gmail.com",
+                        "city": "台中",
+                        "sex": 1,
+                        "phone": "0987654321",
+                        "birthday": "2020-12-31",
+                        "point": 0,
                         "role": 0
                     }
                 }
@@ -359,35 +387,146 @@ class User(Resource):
                         "format": "email"
                     },
                     "city": {
-                        "type": "string",
+                        "type": "string"
+                    },
+                    "phone":{
+                        "type":"string",
+                        "maxLength": 10
+                    },
+                    "bd":{
+                        "type":"string"
+                    },
+                    "sex":{
+                        "type":"integer"
                     }
                 },
                 "required": ["password"]
             })
             jwt_user = get_jwt_identity()
             current_user = Users.objects(id=jwt_user["id"]).first()
+            if current_user is None:
+                return Res.ResErr(403)
             if current_user.checkPassword(input_json["password"]):
                 try:
                     current_user.changeName(input_json["name"])
                 except:
-                    pass
+                    traceback.print_exc()
                 try:
                     if input_json["newPassword"] != input_json["checkPassword"]:
                         return Res.ResErr(400, "PASSWORD NOT EQUAL")
                     current_user.changePassword(input_json["newPassword"])
                 except:
-                    pass 
+                    traceback.print_exc() 
                 try:
                     current_user.changeCity(input_json["city"])
                 except:
-                    pass
+                    traceback.print_exc()
                 try:
                     current_user.changeEmail(input_json["email"])
                 except:
-                    pass
+                    traceback.print_exc()
+                try:
+                    current_user.changePhone(input_json["phone"])
+                except:
+                    traceback.print_exc()
+                try:
+                    current_user.changeBirthday(input_json["bd"])
+                except:
+                    traceback.print_exc()
+                try:
+                    current_user.changeSex(input_json["sex"])
+                except:
+                    traceback.print_exc()
                 return Res.Res200(current_user.get_info())              
             else:
                 return Res.ResErr(401, "Bad Password")
+        except json_Error as e:
+            return Res.ResErr(400, "Invalid JSON document")
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
+
+
+class Ticketlist(Resource):
+    @jwt_required
+    @swagger.doc(Ticket_Create_Doc)
+    def post(self):
+        try:
+            input_json = request.json
+            validate(input_json, {
+                "properties": {
+                    'areaId': {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "type": {
+                        "type": "integer",
+                    },
+                    "exchange": {
+                        "type": "boolean",
+                    },
+                    "face": {
+                        "type": "boolean",
+                    },
+                    "intro": {
+                        "type": "string",
+                    }
+                },
+                "required": ['areaId', 'type', 'exchange','face', 'intro']
+            })
+            jwt_user = get_jwt_identity()
+            current_user = Users.objects(id=jwt_user["id"]).first()
+            if current_user is None:
+                return Res.ResErr(403)
+            current_user.add_ticket(input_json["areaId"],input_json["type"],
+            input_json["exchange"],input_json["face"],input_json["intro"])
+            return Res.Res201(input_json)
+        except json_Error as e:
+            return Res.ResErr(400, "Invalid JSON document")
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
+
+    @swagger.doc({
+        "tags": ["User"],
+        "description": "Get User Ticketlist",
+        "security": [
+            {
+                "Bearer": []
+            }
+        ],
+        "parameters": [{
+            "in": "path",
+            "name": "user_id",
+            "type": "string",
+            "required": True,
+            "description": "Hex ID of the ticket to get"
+        }],
+        "responses": {
+            "200": {
+                "description": "Ticket",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                    }
+                },
+                "examples": {
+                    "application/json": {
+    
+                    }
+                }
+            }
+        }
+    })
+    @jwt_required
+    def get(self):
+        try:
+            jwt_user = get_jwt_identity()
+            current_user = Users.objects(id=jwt_user["id"]).first()
+            if current_user is None:
+                return Res.ResErr(403)
+            tickets = current_user.get_tickets()
+            return Res.Res200(tickets)
         except json_Error as e:
             return Res.ResErr(400, "Invalid JSON document")
         except:
