@@ -31,8 +31,6 @@ api.add_resource(User, "/api/users/<string:user_id>")
 api.add_resource(Validation, "/api/validation")
 api.add_resource(ActivityList, "/api/activity")
 api.add_resource(Activity, "/api/activity/<string:id>")
-
-api.add_resource(Activity, "/api/activity/<string:activity_id>")
 api.add_resource(Ticketlist,"/api/tickets")
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)
