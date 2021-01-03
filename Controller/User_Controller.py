@@ -446,7 +446,21 @@ class User(Resource):
             traceback.print_exc()
             return Res.ResErr(500)
 
-
+class ticket_verification(Resource):
+    @jwt_required
+    def get(self):
+        try:
+            jwt_user = get_jwt_identity()
+            current_user = Users.objects(id=jwt_user["id"]).first()
+            if current_user is None:
+                return Res.ResErr(403)
+            verification = current_user.get_ticket_verify()
+            return Res.Res200(verification)
+        except json_Error as e:
+            return Res.ResErr(400, "Invalid JSON document")
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
 class Ticketlist(Resource):
     @jwt_required
     @swagger.doc(Ticket_Create_Doc)
