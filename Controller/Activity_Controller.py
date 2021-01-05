@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
+import re
 from jsonschema.exceptions import ValidationError
+from mongoengine.errors import ValidationError as Mongo_Validation_Error
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from Models.Http_Responses import Res
 from flask import request
@@ -16,6 +18,25 @@ class ActivityList(Resource):
     @swagger.doc({
         "tags": ["Activity"],
         "description": "Get Activitys",
+        "parameters": [{
+            "in": "query",
+            "name": "keyword",
+            "type": "string",
+            "required": False,
+            "description": "Filter activity string"
+        }, {
+            "in": "query",
+            "name": "page",
+            "type": "integer",
+            "required": False,
+            "description": "pages"
+        }, {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "required": False,
+            "description": "items per page"
+        }],
         "responses": {
             "200": {
                 "description": "Activitys",
@@ -35,8 +56,21 @@ class ActivityList(Resource):
     })
     def get(self):
         try:
-            result = Activitys.objects().to_json()
-            return Res.Res200(json.loads(result))
+            args = request.args
+            print(args)
+
+            if "keyword" in args:
+                regex = re.compile(".*" + args["keyword"] + ".*")
+                result = Activitys.objects(name=regex)
+            else:
+                result = Activitys.objects()
+            limit = int(args["limit"]) if ("limit" in args and
+                                           0 < int(args["limit"]) <= 50) else 50
+            page = int(args["page"]) if (
+                "page" in args and int(args["page"]) > 0) else 1
+            offset = (page - 1) * limit
+            result = result.skip(offset).limit(limit)
+            return Res.Res200(json.loads(result.to_json()))
         except:
             traceback.print_exc()
             return Res.ResErr(500)
@@ -395,7 +429,7 @@ class Activity(Resource):
         "description": "Get an Activity",
         "parameters": [{
             "in": "path",
-            "name": "activity_id",
+            "name": "id",
             "type": "string",
             "required": True,
             "description": "Hex ID of the activity to get"
@@ -403,18 +437,7 @@ class Activity(Resource):
         "responses": {
             "200": {
                 "description": "Activity",
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "id": {"type": "string"},
-                        "name": {"type": "string"},
-                        "username": {"type": "string"},
-                        "email": {"type": "string",
-                                  "format": "email"},
-                        "point": {"type": "integer"},
-                        "role": {"type": "integer"},
-                    }
-                },
+                "schema": {},
                 "examples": {
                     "application/json": {
                         "id": "1234567890abcdef12345678",
@@ -450,26 +473,65 @@ class Activity(Resource):
             }
         }
     })
-    def get(self):
+    def get(self, id):
         try:
-            input_json = request.json
-            validate(request.json, {
-                "properties": {
-                    "username": {
-                        "type": "string",
-                        "minLength": 4,
-                        "maxLength": 20
-                    },
-                    "password": {
-                        "type": "string",
-                        "minLength": 8
-                    }
-                },
-                "required": ["username", "password"]
-            })
+            result = Activitys.objects(id=id).first()
+            if result is None:
+                return Res.ResErr(404)
+            return Res.Res200(json.loads(result.to_json()))
+        except Mongo_Validation_Error:
+            return Res.ResErr(404, "User Not Found")
+        except:
+            traceback.print_exc()
+            return Res.ResErr(500)
 
-        except ValidationError as e:
-            return Res.ResErr(400, "Invalid JSON document")
+    @swagger.doc({
+        "tags": ["Activity"],
+        "description": "Delete an Activity",
+        "security": [
+            {
+                "Bearer": []
+            }
+        ],
+        "parameters": [{
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": True,
+            "description": "Numeric ID of the activity to delete"
+        }],
+        "responses": {
+            "200": {
+                "description": "Activity Delete",
+                "schema": {},
+                "examples": {
+                    "application/json": {
+                        "status": "SUCCESS",
+                        "data": None,
+                        "message": "OK"
+                    }
+                }
+            }
+        }
+    })
+    @jwt_required
+    def delete(self, id):
+        try:
+            current_user = get_jwt_identity()
+            if (current_user["role"] != 1):
+                return Res.ResErr(403)
+            admin = Users.objects(id=current_user["id"]).first()
+            if admin is None:
+                return Res.ResErr(403)
+            activity = Activitys.objects(id=id).first()
+            if activity:
+                activity.delete()
+                return Res.Res200()
+            else:
+                return Res.ResErr(404, "Activity Not Found")
+            return Res.Res200()
+        except Mongo_Validation_Error:
+            return Res.ResErr(404, "Activity Not Found")
         except:
             traceback.print_exc()
             return Res.ResErr(500)
