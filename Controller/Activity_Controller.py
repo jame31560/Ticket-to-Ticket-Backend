@@ -92,6 +92,10 @@ class ActivityList(Resource):
                     "name": {
                         "type": "string"
                     },
+                    "img_url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
                     "event_type": {
                         "type": "integer"
                     },
@@ -191,6 +195,7 @@ class ActivityList(Resource):
                             },
                             "event_type": 0,
                             "name": "五月天 [ 好好好想見到你 ] Mayday Fly to 2021 演唱會",
+                            "img_url": "https://static.tixcraft.com/images/activity/20_MAYDAY_8987933be02c14b4d8048f5fb91c1fab.jpg",
                             "website": "https://tixcraft.com/activity/detail/20_MAYDAY",
                             "events": [
                                     {
@@ -320,6 +325,10 @@ class ActivityList(Resource):
                     "name": {
                         "type": "string"
                     },
+                    "img_url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
                     "artis": {
                         "type":  "array",
                         "items": {
@@ -407,6 +416,7 @@ class ActivityList(Resource):
                 return Res.ResErr(403)
             activity = Activitys(
                 event_type=in_activity["event_type"],
+                img_url=in_activity["img_url"],
                 name=in_activity["name"],
                 website=in_activity["website"] if "website" in in_activity else None,
                 artis=in_activity["artis"],

@@ -73,6 +73,7 @@ class Mark(EmbeddedDocument):
 
 class Activitys(Document):
     event_type = IntField()
+    img_url = URLField()
     name = StringField()
     website = URLField()
     events = ListField(EmbeddedDocumentField(Event), default=[])
