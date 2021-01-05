@@ -1,7 +1,7 @@
 from Controller.Activity_Controller import Activity, ActivityList
 from config import DOMAIN, LOCAL,  PORT
 from Controller.Auth_Controller import Auth_Controller
-from Controller.User_Controller import User, UserList, Validation,Ticketlist
+from Controller.User_Controller import User, UserList, Validation,Ticketlist,ticket_verification
 from flask_restful_swagger_2 import Api
 
 from app import app
@@ -32,5 +32,7 @@ api.add_resource(Validation, "/api/validation")
 api.add_resource(ActivityList, "/api/activity")
 api.add_resource(Activity, "/api/activity/<string:id>")
 api.add_resource(Ticketlist,"/api/tickets")
+api.add_resource(ticket_verification,"/api/ticket_verification")
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)

@@ -23,7 +23,7 @@ class Users(Document):
     phone = StringField()
     city = StringField()
     tickets = ListField(EmbeddedDocumentField(Ticket), default=[])
-
+    ticket_verify = BooleanField()
     def signup(self, name: str,
                username: str, password: str, email: str,sex: int,bd: str,
                phone: str,city: str) -> None:
@@ -37,6 +37,7 @@ class Users(Document):
         self.city = city
         self.verify = False
         self.point = 0
+        self.ticket_verify = False
         self.role = 0
         self.token = pbkdf2_sha256.encrypt(str(datetime.now()))[
             21:].replace("$", "").replace("/", "")
@@ -132,3 +133,10 @@ class Users(Document):
         for ticket in self.tickets:
             list.append(ticket.get_info())
         return list 
+
+    def get_ticket_verify(self):
+        return self.ticket_verify
+
+    def ticket_verification(self):
+        self.ticket_verify = True
+        self.save()
